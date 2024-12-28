@@ -1,0 +1,3 @@
+[submodule "wad-proto"]
+	path = wad-proto
+	url = https://github.com/pittjohn908/wad-proto.git
