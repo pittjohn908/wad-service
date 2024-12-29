@@ -14,3 +14,6 @@ tower = "0.5.2"
 
 [build-dependencies]
 tonic-build = "0.12.3"
+
+[dev-dependencies]
+sqlx-cli = "0.8.2"
