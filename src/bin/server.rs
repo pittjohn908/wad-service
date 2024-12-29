@@ -1,7 +1,9 @@
 use tonic::async_trait;
 use tonic::transport::Server;
-use wad_service::echo_server::{Echo, EchoServer};
-use wad_service::{EchoReply, EchoRequest};
+use wad_service::grpc::dictionary_server::DictionaryServer;
+use wad_service::grpc::echo_server::{Echo, EchoServer};
+use wad_service::grpc::{EchoReply, EchoRequest};
+use wad_service::services::dictionary::DictionaryService;
 
 pub struct MyEcho;
 
@@ -23,6 +25,7 @@ async fn main() -> anyhow::Result<()> {
 
     Server::builder()
         .add_service(EchoServer::new(MyEcho))
+        .add_service(DictionaryServer::new(DictionaryService))
         .serve(addr)
         .await?;
 
