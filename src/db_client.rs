@@ -1,12 +1,19 @@
 use sqlx::postgres::PgPool;
 use thiserror::Error;
+use tonic::Status;
 
-use crate::services::dictionary_models::{DbDefinition, DbWord};
+use crate::{grpc::WordDetails, services::db_models::{DbDefinition, DbWord}};
 
 #[derive(Debug, Error)]
 pub enum DbError {
     #[error(transparent)]
     SqlxError(#[from] sqlx::Error)
+}
+
+impl Into<Status> for DbError {
+    fn into(self) -> Status {
+        Status::from_error(Box::new(self))
+    }
 }
 
 pub type DbResult<T> = Result<T, DbError>;
@@ -18,18 +25,23 @@ pub(crate) struct DbClient {
 
 
 impl DbClient {
-    pub async fn get_random_word(&self) -> DbResult<DbWord> {
+    pub fn from(pool: PgPool) -> Self {
+        Self {
+            pool
+        }
+    }
+
+    pub async fn get_random_word(&self) -> DbResult<WordDetails> {
         let word = sqlx::query_as::<_, DbWord>(
             r#"
                 SELECT * FROM words
                 ORDER BY RANDOM() LIMIT 1;
             "#
         )
-        .fetch_optional(&self.pool)
+        .fetch_one(&self.pool)
         .await?;
 
-        if let Some(word) = word {
-            let definitions: Vec<DbDefinition> = sqlx::query_as(
+        let definitions: Vec<DbDefinition> = sqlx::query_as::<_, DbDefinition>(
                 r#"
                     SELECT * FROM definitions
                     WHERE word_id = $1
@@ -39,10 +51,7 @@ impl DbClient {
             .fetch_all(&self.pool)
             .await?;
 
-            return Ok(word);
-        }
-
-        Ok(DbWord::default())
+        return Ok(WordDetails::from(word, definitions));
     }
 }
 

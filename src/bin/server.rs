@@ -1,3 +1,4 @@
+use sqlx::PgPool;
 use tonic::async_trait;
 use tonic::transport::Server;
 use wad_service::grpc::dictionary_server::DictionaryServer;
@@ -23,9 +24,12 @@ impl Echo for MyEcho {
 async fn main() -> anyhow::Result<()> {
     let addr = "[::1]:50051".parse().unwrap();
 
+    let pool = PgPool::connect(&dotenvy::var("DATABASE_URL")?).await?;
+    let dictionary_service = DictionaryService::from(pool.clone());
+
     Server::builder()
         .add_service(EchoServer::new(MyEcho))
-        .add_service(DictionaryServer::new(DictionaryService))
+        .add_service(DictionaryServer::new(dictionary_service))
         .serve(addr)
         .await?;
 
