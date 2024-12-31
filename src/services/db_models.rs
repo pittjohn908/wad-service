@@ -5,7 +5,7 @@ pub(crate) struct DbWord {
     pub id: i32,
     pub text: String,
     pub language: String,
-    pub _difficulty: i32,
+    pub difficulty: i32,
 }
 
 #[derive(Debug, Default, sqlx::FromRow)]

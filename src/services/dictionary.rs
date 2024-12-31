@@ -2,16 +2,16 @@ use sqlx::PgPool;
 use tonic::{async_trait, Request, Response, Status};
 
 use crate::db_client::DbClient;
-use crate::grpc::dictionary_server::Dictionary;
-use crate::grpc::{GetRandomWordReply, GetRandomWordRequest};
+use crate::grpc::dictionary_service_server::DictionaryService;
+use crate::grpc::{GetRandomWordResponse, GetRandomWordRequest};
 
-pub struct DictionaryService {
+pub struct DictionaryGrpcService {
     db_client: DbClient
 }
 
-impl DictionaryService {
+impl DictionaryGrpcService {
     pub fn from(pool: PgPool) -> Self {
-        DictionaryService {
+        DictionaryGrpcService {
             db_client: DbClient::from(pool)
         }
     }
@@ -20,15 +20,15 @@ impl DictionaryService {
 type ServiceResponse<T> = Result<Response<T>, Status>;
 
 #[async_trait]
-impl Dictionary for DictionaryService {
+impl DictionaryService for DictionaryGrpcService {
     async fn get_random_word(
         &self,
         _request: Request<GetRandomWordRequest>,
-    ) -> ServiceResponse<GetRandomWordReply> {
+    ) -> ServiceResponse<GetRandomWordResponse> {
         let word_details = self.db_client.get_random_word().await;
 
         match word_details {
-            Ok(word_details) => Ok(Response::new(GetRandomWordReply {
+            Ok(word_details) => Ok(Response::new(GetRandomWordResponse {
                 word: Some(word_details)
             })),
             Err(err) => Err(err.into()),
