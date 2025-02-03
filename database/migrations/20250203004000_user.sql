@@ -1,6 +1,6 @@
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
-    email VARCHAR(100),
+    email VARCHAR(255),
     first_name VARCHAR(50),
     last_name VARCHAR(50),
     date_created TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -12,7 +12,8 @@ CREATE TABLE auth_providers (
     provider_name VARCHAR(50),
     UNIQUE (provider_name)
 );
-INSERT INTO auth_providers (provider_name) VALUES ('local'),
+INSERT INTO auth_providers (provider_name) VALUES
+('local'),
 ('apple'),
 ('google'),
 ('facebook');

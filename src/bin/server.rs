@@ -9,7 +9,7 @@ use wad_service::auth::auth_utils::check_auth;
 use wad_service::grpc::dictionary_service_server::DictionaryServiceServer;
 use wad_service::grpc::echo_service_server::{EchoService, EchoServiceServer};
 use wad_service::grpc::{EchoRequest, EchoResponse};
-use wad_service::services::dictionary::DictionaryGrpcService;
+use wad_service::services::dictionary_service::DictionaryGrpcService;
 
 pub struct MyEcho;
 

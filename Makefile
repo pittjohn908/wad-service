@@ -7,7 +7,6 @@ DB_PASSWORD := wad_password
 DB_PORT := 5432
 DATABASE_URL := postgresql://wad_user:wad_password@localhost:5432/wad_db_local
 
-
 db-pull:
 	docker pull $(POSTGRES_IMAGE)
 
@@ -26,7 +25,7 @@ db-reset:
 	@make db-start
 	@sleep 5
 	@make db-run-migrations
-	@make db-seed
+	@make run-seed
 	@echo "Database reset complete!"
 
 db-add-migration:
@@ -37,15 +36,13 @@ db-run-migrations:
 	sqruff lint database/migrations
 	sqlx migrate run --source database/migrations --database-url $(DATABASE_URL)
 
-db-seed:
-	DATABASE_URL=$(DATABASE_URL) cargo run --bin seed 
-
-
-
-# Applications Commands
+# Applications Bin Commands
 
 run-server:
 	DATABASE_URL=$(DATABASE_URL) cargo run --bin server
 
 run-client:
 	DATABASE_URL=$(DATABASE_URL) cargo run --bin client
+
+run-seed:
+	DATABASE_URL=$(DATABASE_URL) cargo run --bin seed 
