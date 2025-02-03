@@ -8,6 +8,7 @@ Service to power retrieving new words for users
 $ brew install quarylabs/quary/sqruff
 ```
 
+
 ## TODOs
 
 1. Cache Decoding Key

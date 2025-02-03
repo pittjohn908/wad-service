@@ -29,6 +29,8 @@ db-reset:
 	@make db-seed
 	@echo "Database reset complete!"
 
+db-add-migration:
+	sqlx migrate add -r $(MIGRATION_NAME) --source ./database/migrations
 
 db-run-migrations:
 	sqruff fix database/migrations
@@ -37,6 +39,8 @@ db-run-migrations:
 
 db-seed:
 	DATABASE_URL=$(DATABASE_URL) cargo run --bin seed 
+
+
 
 # Applications Commands
 
