@@ -1,29 +1,12 @@
 use std::sync::Arc;
 
 use sqlx::PgPool;
-use tonic::async_trait;
 use tonic::transport::Server;
 use tonic_async_interceptor::async_interceptor;
 use wad_service::auth::apple_keys::AppleKeyManager;
 use wad_service::auth::auth_utils::check_auth;
 use wad_service::grpc::dictionary_service_server::DictionaryServiceServer;
-use wad_service::grpc::echo_service_server::{EchoService, EchoServiceServer};
-use wad_service::grpc::{EchoRequest, EchoResponse};
 use wad_service::services::dictionary_service::DictionaryGrpcService;
-
-pub struct MyEcho;
-
-#[async_trait]
-impl EchoService for MyEcho {
-    async fn echo(
-        &self,
-        request: tonic::Request<EchoRequest>,
-    ) -> Result<tonic::Response<EchoResponse>, tonic::Status> {
-        Ok(tonic::Response::new(EchoResponse {
-            message: format!("Echoing back: {}", request.get_ref().message),
-        }))
-    }
-}
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -49,7 +32,6 @@ async fn main() -> anyhow::Result<()> {
     Server::builder()
         .layer(async_interceptor(auth_interceptor))
         .add_service(reflection_service)
-        .add_service(EchoServiceServer::new(MyEcho))
         .add_service(DictionaryServiceServer::new(DictionaryGrpcService::from(
             pool.clone(),
         )))
